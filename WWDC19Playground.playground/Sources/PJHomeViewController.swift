@@ -2,7 +2,14 @@ import UIKit
 
 public class PJHomeViewController: UIViewController {
     
-    var itemTag = 100
+    public enum GameType {
+        case create
+        case guide
+    }
+    
+    var gameType: GameType = .guide
+    
+    private var itemTag = 100
     
     public override func loadView() {
         view = UIView(frame: CGRect(x: 0, y: 0, width: 375, height: 667))
