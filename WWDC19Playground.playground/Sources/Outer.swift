@@ -19,6 +19,8 @@ public var sizeType: SizeType = .rectangle
 
 public func start(_ gameType: PJHomeViewController.GameType) {
     let vc = PJHomeViewController()
-    vc.gameType = gameType
+    vc.brocadeType = .normal
+    vc.brocadeBackgroundColor = .bgColor()
+    vc.sizeType = .rectangle
     PlaygroundPage.current.liveView = vc
 }

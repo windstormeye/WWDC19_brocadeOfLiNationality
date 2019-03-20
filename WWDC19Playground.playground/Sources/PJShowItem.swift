@@ -1,5 +1,5 @@
 import UIKit
-import PlaygroundSupport
+
 
 public class PJShowItem: UIView {
     /// return new item.center
@@ -11,22 +11,40 @@ public class PJShowItem: UIView {
     var endLeft: CGFloat?
     var endRight: CGFloat?
     
-    // 移动开始时的位置
+    /// 移动开始时的位置
     var oldCenter: CGPoint?
-    
-    // 当前在 x 轴上的位置
+    /// 底图
+    var bgImage: UIImage? { didSet { didSetBgImgae() } }
+    /// 当前在 x 轴上的位置
     var currentXIndex: Int?
-    // 当前在 y 轴上的位置
+    /// 当前在 y 轴上的位置
     var currentYIndex: Int?
-    
-    // 之前在 x 轴上的位置
+    /// 之前在 x 轴上的位置
     var previousXIndex: Int?
-    // 之前在 y 轴上的位置
+    /// 之前在 y 轴上的位置
     var previousYIndex: Int?
+    /// 是否需要移动
+    var isMove: Bool = false {
+        didSet {
+            if isCopy {
+                left -= width / 3 - 2.5
+                return
+            }
+            right += width / 3 - 2.5
+        }
+    }
+    
+    private var isCopy: Bool = false
+    var isBottomItem: Bool = false
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
         initView()
+    }
+    
+    convenience init(frame: CGRect, isCopy: Bool) {
+        self.init(frame: frame)
+        self.isCopy = isCopy
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -36,6 +54,16 @@ public class PJShowItem: UIView {
     private func initView() {
         let panGesture = UIPanGestureRecognizer(target: self, action: .pan)
         addGestureRecognizer(panGesture)
+    }
+    
+    private func didSetBgImgae() {
+        let imageView = UIImageView(image: bgImage!)
+        imageView.contentMode = .left
+        imageView.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        if isCopy {
+            imageView.transform = CGAffineTransform(scaleX: -1, y: 1)
+        }
+        addSubview(imageView)
     }
     
     @objc
@@ -51,7 +79,6 @@ public class PJShowItem: UIView {
             
             let final_right = final_centerX + width / 2
             let final_left = final_centerX - width / 2
-            
             let final_top = final_centerY - height / 2
             let final_bottom = final_centerY + height / 2
             
@@ -94,4 +121,11 @@ public class PJShowItem: UIView {
 
 fileprivate extension Selector {
     static let pan = #selector(PJShowItem.panGestrue(panGesture:))
+}
+
+
+extension PJShowItem {
+    static func == (leftItem: PJShowItem, rightItem: PJShowItem) -> Bool {
+        return leftItem.tag == rightItem.tag
+    }
 }

@@ -1,22 +1,20 @@
 import UIKit
-import PlaygroundSupport
 
 class PJLineCollectionViewCell: UICollectionViewCell {
-    //    var viewModel: ViewModel? {
-    //        didSet { setViewModel(viewModel!) }
-    //    }
-    
-    var viewModel: UIColor? {
-        didSet { setViewModel(viewModel!) }
+    var viewModel: UIImage? {
+        didSet { setViewModel() }
     }
     
-    private func setViewModel(_ viewModel: UIColor) {
-        backgroundColor = viewModel
+    private func setViewModel() {
+        let img = UIImageView(image: viewModel)
+        img.contentMode = .scaleAspectFit
+        img.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        addSubview(img)
     }
-}
-
-extension PJLineCollectionViewCell {
-    struct ViewModel {
-        var image: UIImage
+    
+    func clearSubView() {
+        for view in subviews {
+            view.removeFromSuperview()
+        }
     }
 }

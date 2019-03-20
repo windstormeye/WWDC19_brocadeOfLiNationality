@@ -1,10 +1,9 @@
 import UIKit
-import PlaygroundSupport
+
 
 public class PJShowBottonView: UIView {
     
-    //    var images: [UIImage]?
-    var viewModel: [UIColor]? {
+    var viewModel: [UIImage]? {
         didSet { collectionView?.viewModels = viewModel }
     }
     var moveCell: ((Int, CGPoint) -> Void)?
@@ -29,10 +28,14 @@ public class PJShowBottonView: UIView {
     }
     
     private func initView() {
-        backgroundColor = .white
-        layer.shadowColor = UIColor.white.cgColor
-        layer.shadowOffset = CGSize(width: 0, height: 0)
-        layer.shadowOpacity = 1
+        backgroundColor = .clear
+        
+        let effect = UIBlurEffect(style: .extraLight)
+        let effectView = UIVisualEffectView(effect: effect)
+        effectView.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        addSubview(effectView)
+        
+        PJInsertRoundingCorners(self)
         
         let collectionViewLayout = UICollectionViewFlowLayout()
         let itemW = 50
