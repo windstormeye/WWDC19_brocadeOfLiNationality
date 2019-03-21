@@ -7,6 +7,7 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
     var brocadeType: BrocadeType = .normal
     var sizeType: SizeType = .rectangle
     var brocadeBackgroundColor: UIColor = UIColor.bgColor()
+    var audioPlayer:AVAudioPlayer = AVAudioPlayer()
     
     private var bottomView: PJShowBottonView?
     private var contentView: PJShowContentView?
@@ -15,10 +16,9 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
     public override func loadView() {
         view = UIView(frame: CGRect(x: 0, y: 0, width: 375, height: 667))
         view.backgroundColor = brocadeBackgroundColor
-        self.winLabel.isHighlighted = true
+        self.winLabel.isHidden = true
         
-        // TODO: 背景音乐有问题
-        startMusic()
+        //        startMusic()
         
         let contentView = PJShowContentView()
         self.contentView = contentView
@@ -49,29 +49,52 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
         let bottomView = PJShowBottonView(height: 64, longPressView: view)
         view.addSubview(bottomView)
         self.bottomView = bottomView
+        bottomView.isHidden = true
+        bottomView.layer.opacity = 0
+        
+        UIView.animate(withDuration: 2) {
+            bottomView.isHidden = false
+            bottomView.layer.opacity = 1
+        }
+        
         var imgs = [UIImage]()
+        var imgIndexs = [Int]()
+        
         for itemY in 0..<contentView.itemYCont! {
             for itemX in 0..<contentView.itemXCount! {
                 let x = (contentView.itemW ?? 0) * CGFloat(itemX)
                 let y = (contentView.itemW ?? 0) * CGFloat(itemY)
                 var itemW = contentView.itemW
                 var itemH = itemW
-
+                
                 if itemY == contentView.itemYCont! - 1 {
                     itemW = contentView.itemW
                     itemH = CGFloat(20)
                 }
-
+                
                 if itemX == contentView.itemXCount! - 1 {
                     itemW = contentView.itemW! / 3 * 2 + 2
                 }
-
+                
                 let img = contentView.bgImageView?.image?.image(with: CGRect(x: x, y: y,
                                                                              width: itemW!,
                                                                              height: itemH!))
                 imgs.append(img!)
+                imgIndexs.append(itemY * contentView.itemXCount! + itemX)
             }
         }
+        
+        
+        
+        for i in 1..<imgs.count {
+            let index = Int(arc4random()) % i
+            if index != i {
+                imgs.swapAt(i, index)
+                imgIndexs.swapAt(i, index)
+            }
+        }
+        
+        bottomView.collectionView?.viewModelIndexs = imgIndexs
         bottomView.viewModel = imgs
         bottomView.moveCell = { cellIndex, centerPoint in
             guard let tempItem = contentView.tempItem else { return }
@@ -80,7 +103,7 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
         }
         bottomView.moveBegin = { cellIndex in
             guard contentView.itemXCount != nil else { return }
-
+            
             let itemW = contentView.itemW
             // 刚开始的初始化先让其消失
             let moveItem = PJShowItem(frame: CGRect(x: -1000, y: -1000,
@@ -96,16 +119,16 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
             moveItem.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
             moveItem.tag = self.itemTag
             self.itemTag += 1
-
+            
             // TODO：重新设计。最后一排，顺序不能错，从左到右一个一个来！！！
             if [28, 29, 30].contains(moveItem.tag - 100) {
                 moveItem.isBottomItem = true
             }
-
+            
             contentView.addSubview(moveItem)
             contentView.tempItem = moveItem
         }
-
+        
         bottomView.moveEnd = {
             guard let tempItem = contentView.tempItem else { return }
             tempItem.transform = CGAffineTransform(scaleX: 1, y: 1)
@@ -114,7 +137,7 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
     
     private func win() {
         startParticleAnimation(CGPoint(x: screenWidth / 2, y: screenHeight - 10))
-        
+        self.winLabel.isHidden = false
         
         UIView.animate(withDuration: 0.25, animations: {
             self.bottomView!.top = screenHeight
@@ -150,17 +173,18 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
     }
     
     private func startMusic() {
-        var backgroundAP: AVAudioPlayer?
-        let path = Bundle.main.path(forResource: "LiSong.mp3", ofType:nil)!
-        let url = URL(fileURLWithPath: path)
-        
-        do {
-            backgroundAP = try AVAudioPlayer(contentsOf: url)
-            backgroundAP?.volume = 0.07;
-            backgroundAP?.numberOfLoops = 10;
-            backgroundAP?.play()
-        } catch {
-            print("Error with playing background music")
+        let session = AVAudioSession.sharedInstance()
+        do{
+            try session.setActive(true)
+            let path = Bundle.main.path(forResource: "LiSong", ofType: "mp3")
+            let soudUrl = URL(fileURLWithPath: path!)
+            try audioPlayer = AVAudioPlayer(contentsOf: soudUrl)
+            audioPlayer.prepareToPlay()
+            audioPlayer.volume = 1.0
+            audioPlayer.numberOfLoops = -1
+            audioPlayer.play()
+        } catch{
+            print(error)
         }
     }
     
