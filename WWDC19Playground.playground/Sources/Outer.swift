@@ -7,21 +7,13 @@ public enum BrocadeType {
     case big
 }
 
-public enum SizeType {
-    case rectangle
-    case square
-    case circular
-}
-
 public var brocadeType: BrocadeType = .normal
 public var brocadeBackgroundColor: UIColor = UIColor.bgColor()
-public var sizeType: SizeType = .rectangle
 
 public func start(_ gameType: PJHomeViewController.GameType) {
     let vc = PJHomeViewController()
     vc.brocadeType = .normal
     vc.gameType = gameType
     vc.brocadeBackgroundColor = .bgColor()
-    vc.sizeType = .rectangle
     PlaygroundPage.current.liveView = vc
 }

@@ -5,7 +5,6 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
     
     var gameType: GameType = .guide
     var brocadeType: BrocadeType = .normal
-    var sizeType: SizeType = .rectangle
     var brocadeBackgroundColor: UIColor = UIColor.bgColor()
     var audioPlayer:AVAudioPlayer = AVAudioPlayer()
     
@@ -33,31 +32,11 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
         case .small: contentView.itemXCount = 2
         case .big: contentView.itemXCount = 4
         }
-        
-        switch sizeType {
-        case .rectangle: contentView.frame = CGRect(x: 0, y: 0,
-                                                    width: view.width,
-                                                    height: view.height - 64)
-        case .square: contentView.frame = CGRect(x: 0, y: 0,
-                                                 width: view.width,
-                                                 height: view.width)
-        contentView.y = (screenHeight - screenWidth) / 2
-        case .circular: break
-        }
+        contentView.frame = CGRect(x: 0, y: 0,
+                                   width: view.width,
+                                   height: view.height - 64)
         
         PJShowItemCreator.shared.brocadeType = brocadeType
-        
-        let bottomView = PJShowBottonView(height: 64, longPressView: view)
-        view.addSubview(bottomView)
-        self.bottomView = bottomView
-        bottomView.collectionView?.gameType = gameType
-        bottomView.isHidden = true
-        bottomView.layer.opacity = 0
-        
-        UIView.animate(withDuration: 2) {
-            bottomView.isHidden = false
-            bottomView.layer.opacity = 1
-        }
         
         var imgs = [UIImage]()
         var imgIndexs = [Int]()
@@ -94,6 +73,31 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
             }
         }
         
+        contentView.undoAddItem = { itemTag in
+            var itemIndex = 0
+            for (index, item) in imgIndexs.enumerated() {
+                if item == itemTag - 1 {
+                    itemIndex = index
+                    break
+                }
+            }
+            self.bottomView?.collectionView?.viewModelIndexs?.append(imgIndexs[itemIndex])
+            self.bottomView?.viewModel?.append(imgs[itemIndex])
+        }
+        
+        
+        let bottomView = PJShowBottonView(height: 64, longPressView: view)
+        view.addSubview(bottomView)
+        self.bottomView = bottomView
+        bottomView.collectionView?.gameType = gameType
+        bottomView.isHidden = true
+        bottomView.layer.opacity = 0
+        
+        UIView.animate(withDuration: 2) {
+            bottomView.isHidden = false
+            bottomView.layer.opacity = 1
+        }
+        
         if gameType == .guide {
             bottomView.collectionView?.viewModelIndexs = imgIndexs
         }
@@ -112,18 +116,18 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
                                                     width: itemW!, height: itemW!))
             moveItem.endTop = contentView.endTop
             moveItem.endBottom = contentView.endBottom
-            if self.sizeType == .rectangle && self.gameType == .guide {
+            if self.gameType == .guide {
                 moveItem.endBottom = screenHeight - 40
             }
             moveItem.endLeft = contentView.endLeft
             moveItem.endRight = contentView.endRight
+            // TODO: 这里的问题
             moveItem.bgImage = bottomView.viewModel![cellIndex]
             moveItem.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
-            moveItem.tag = self.itemTag
-            self.itemTag += 1
+            moveItem.tag = bottomView.collectionView!.viewModelIndexs![cellIndex] + 1
             
             
-            if [28, 29, 30].contains(moveItem.tag - 100) {
+            if [28, 29, 30].contains(moveItem.tag) {
                 moveItem.isBottomItem = true
             }
             

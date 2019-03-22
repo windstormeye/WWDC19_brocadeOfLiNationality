@@ -65,7 +65,7 @@ class PJShowItemCreator {
         
         for x in 0..<focusArr.count {
             for y in 0..<verifyItems[x].count {
-                let itemTag = verifyItems[x][y].tag - 100
+                let itemTag = verifyItems[x][y].tag
                 guard focusArr[x][y] != 0 else { continue }
                 
                 if itemTag != focusArr[x][y] {
