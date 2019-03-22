@@ -8,9 +8,6 @@ brocadeType = .normal
 //: If you want to change the brocade background color, you can set `brocadeBackgroundColor` paramter to change it.
 brocadeBackgroundColor = .black
 
-//: If you want to change brocade size, you can set `sizeType`, include `.rectangle`, `.square`, `.circular`.
-sizeType = .rectangle
-
 //: Call `start` function and input `.creator` paramter to start game.
 start(.create)
 

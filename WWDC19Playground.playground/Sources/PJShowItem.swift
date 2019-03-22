@@ -1,7 +1,7 @@
 import UIKit
 
 public class PJShowItem: UIView {
-    /// return new item.center
+    
     var panGestureX: ((CGPoint) -> Void)?
     var panGestureEnd: (() -> Void)?
     var tapGestrueEnd: (() -> Void)?
@@ -37,6 +37,7 @@ public class PJShowItem: UIView {
     
     var isBottomItem = false
     var isHelpItem = false
+    var gameType: PJHomeViewController.GameType = .guide
     private var isCopy: Bool = false
     private var previousRotation: CGFloat = 0
     
@@ -71,7 +72,11 @@ public class PJShowItem: UIView {
     
     private func didSetBgImgae() {
         let imageView = UIImageView(image: bgImage!)
-        imageView.contentMode = .left
+        if gameType == .guide {
+            imageView.contentMode = .left
+        } else {
+            imageView.contentMode = .scaleAspectFill
+        }
         imageView.frame = CGRect(x: 0, y: 0, width: width, height: height)
         if isCopy {
             imageView.transform = CGAffineTransform(scaleX: -1, y: 1)

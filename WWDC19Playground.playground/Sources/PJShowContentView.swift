@@ -101,6 +101,7 @@ public class PJShowContentView: UIView {
         copyItem.tag = focusItem.tag
         copyItem.backgroundColor = focusItem.backgroundColor
         copyItem.isUserInteractionEnabled = false
+        copyItem.gameType = gameType
         copyItem.bgImage = focusItem.bgImage
         addSubview(copyItem)
         
@@ -140,7 +141,9 @@ public class PJShowContentView: UIView {
                     item.removeFromSuperview()
                     self.copyItems.remove(at: index)
                     self.focusItems.remove(at: index)
-                    self.itemsFilter[focusItem.currentYIndex!][focusItem.currentXIndex!] = PJShowItem()
+                    if self.gameType == .guide {
+                        self.itemsFilter[focusItem.currentYIndex!][focusItem.currentXIndex!] = PJShowItem()
+                    }
                 }
             }
         }

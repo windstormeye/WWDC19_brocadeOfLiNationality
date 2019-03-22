@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 import PlaygroundSupport
 
 public enum BrocadeType {
@@ -14,6 +15,6 @@ public func start(_ gameType: PJHomeViewController.GameType) {
     let vc = PJHomeViewController()
     vc.brocadeType = .normal
     vc.gameType = gameType
-    vc.brocadeBackgroundColor = .bgColor()
+    vc.brocadeBackgroundColor = brocadeBackgroundColor
     PlaygroundPage.current.liveView = vc
 }

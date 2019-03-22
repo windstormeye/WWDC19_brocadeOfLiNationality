@@ -18,7 +18,7 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
         self.winLabel.isHidden = true
         
         //        startMusic()
-        
+                
         let contentView = PJShowContentView()
         contentView.gameType = gameType
         self.contentView = contentView
@@ -41,37 +41,44 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
         var imgs = [UIImage]()
         var imgIndexs = [Int]()
         
-        for itemY in 0..<contentView.itemYCont! {
-            for itemX in 0..<contentView.itemXCount! {
-                let x = (contentView.itemW ?? 0) * CGFloat(itemX)
-                let y = (contentView.itemW ?? 0) * CGFloat(itemY)
-                var itemW = contentView.itemW
-                var itemH = itemW
-                
-                if itemY == contentView.itemYCont! - 1 {
-                    itemW = contentView.itemW
-                    itemH = CGFloat(20)
+        if gameType == .guide {
+            for itemY in 0..<contentView.itemYCont! {
+                for itemX in 0..<contentView.itemXCount! {
+                    let x = (contentView.itemW ?? 0) * CGFloat(itemX)
+                    let y = (contentView.itemW ?? 0) * CGFloat(itemY)
+                    var itemW = contentView.itemW
+                    var itemH = itemW
+                    
+                    if itemY == contentView.itemYCont! - 1 {
+                        itemW = contentView.itemW
+                        itemH = CGFloat(20)
+                    }
+                    
+                    if itemX == contentView.itemXCount! - 1 {
+                        itemW = contentView.itemW! / 3 * 2 + 2
+                    }
+                    
+                    let img = contentView.bgImageView?.image?.image(with: CGRect(x: x, y: y, width: itemW!, height: itemH!))
+                    imgs.append(img!)
+                    imgIndexs.append(itemY * contentView.itemXCount! + itemX)
                 }
-                
-                if itemX == contentView.itemXCount! - 1 {
-                    itemW = contentView.itemW! / 3 * 2 + 2
+            }
+            
+            for i in 1..<imgs.count {
+                let index = Int(arc4random()) % i
+                if index != i {
+                    imgs.swapAt(i, index)
+                    imgIndexs.swapAt(i, index)
                 }
-                
-                let img = contentView.bgImageView?.image?.image(with: CGRect(x: x, y: y, width: itemW!, height: itemH!))
+            }
+        } else {
+            for index in 1...16 {
+                let img = UIImage(named: "created_\(index)")
                 imgs.append(img!)
-                imgIndexs.append(itemY * contentView.itemXCount! + itemX)
+                imgIndexs.append(index)
             }
         }
         
-        
-        
-        for i in 1..<imgs.count {
-            let index = Int(arc4random()) % i
-            if index != i {
-                imgs.swapAt(i, index)
-                imgIndexs.swapAt(i, index)
-            }
-        }
         
         contentView.undoAddItem = { itemTag in
             var itemIndex = 0
@@ -81,8 +88,11 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
                     break
                 }
             }
-            self.bottomView?.collectionView?.viewModelIndexs?.append(imgIndexs[itemIndex])
-            self.bottomView?.viewModel?.append(imgs[itemIndex])
+            
+            if self.gameType == .guide {
+                self.bottomView?.collectionView?.viewModelIndexs?.append(imgIndexs[itemIndex])
+                self.bottomView?.viewModel?.append(imgs[itemIndex])
+            }
         }
         
         
@@ -98,9 +108,7 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
             bottomView.layer.opacity = 1
         }
         
-        if gameType == .guide {
-            bottomView.collectionView?.viewModelIndexs = imgIndexs
-        }
+        bottomView.collectionView?.viewModelIndexs = imgIndexs
         bottomView.viewModel = imgs
         bottomView.moveCell = { cellIndex, centerPoint in
             guard let tempItem = contentView.tempItem else { return }
@@ -114,6 +122,7 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
             // 刚开始的初始化先让其消失
             let moveItem = PJShowItem(frame: CGRect(x: -1000, y: -1000,
                                                     width: itemW!, height: itemW!))
+            moveItem.gameType = self.gameType
             moveItem.endTop = contentView.endTop
             moveItem.endBottom = contentView.endBottom
             if self.gameType == .guide {
@@ -121,7 +130,6 @@ public class PJHomeViewController: UIViewController, PJParticleAnimationable {
             }
             moveItem.endLeft = contentView.endLeft
             moveItem.endRight = contentView.endRight
-            // TODO: 这里的问题
             moveItem.bgImage = bottomView.viewModel![cellIndex]
             moveItem.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
             moveItem.tag = bottomView.collectionView!.viewModelIndexs![cellIndex] + 1

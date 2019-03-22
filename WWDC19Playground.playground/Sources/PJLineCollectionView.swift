@@ -59,7 +59,10 @@ class PJLineCollectionView: UICollectionView {
             if cellIndexPath != nil {
                 currentCellIndex = cellIndexPath!.row
                 moveBegin?(currentCellIndex!)
-                viewModelIndexs!.remove(at: currentCellIndex!)
+                
+                if gameType == .guide {
+                    viewModelIndexs!.remove(at: currentCellIndex!)
+                }
             }
             
         case .changed:
@@ -72,8 +75,8 @@ class PJLineCollectionView: UICollectionView {
         case .ended:
             if gameType == .guide {
                 viewModels!.remove(at: currentCellIndex!)
+                reloadData()
             }
-            reloadData()
             moveEnd?()
             
         default: break
