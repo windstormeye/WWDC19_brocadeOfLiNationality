@@ -5,6 +5,7 @@ public class PJShowItem: UIView {
     /// return new item.center
     var panGestureX: ((CGPoint) -> Void)?
     var panGestureEnd: (() -> Void)?
+    var tapGestrueEnd: (() -> Void)?
     
     var endTop: CGFloat?
     var endBottom: CGFloat?
@@ -34,8 +35,10 @@ public class PJShowItem: UIView {
         }
     }
     
+    var isBottomItem = false
+    var isHelpItem = false
     private var isCopy: Bool = false
-    var isBottomItem: Bool = false
+    private var previousRotation: CGFloat = 0
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -54,6 +57,10 @@ public class PJShowItem: UIView {
     private func initView() {
         let panGesture = UIPanGestureRecognizer(target: self, action: .pan)
         addGestureRecognizer(panGesture)
+        
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: .doubleTap)
+        doubleTapGesture.numberOfTapsRequired = 2
+        addGestureRecognizer(doubleTapGesture)
     }
     
     private func didSetBgImgae() {
@@ -70,6 +77,9 @@ public class PJShowItem: UIView {
     fileprivate func panGestrue(panGesture: UIPanGestureRecognizer) {
         switch panGesture.state {
         case .began:
+            layer.borderColor = UIColor.white.cgColor
+            layer.borderWidth = 1.5
+            
             oldCenter = self.center
         case .changed:
             let translation = panGesture.translation(in: superview)
@@ -112,8 +122,19 @@ public class PJShowItem: UIView {
             
             panGestureX?(center)
         case .ended:
+            layer.borderWidth = 0
             panGestureEnd?()
         default: break
+        }
+    }
+    
+    @objc
+    fileprivate func doubleTapGesture(tap: UITapGestureRecognizer) {
+        if tap.state == .ended {
+            let ratation = CGFloat(Double.pi / 2.0)
+            transform = CGAffineTransform(rotationAngle: previousRotation + ratation)
+            previousRotation += ratation
+            tapGestrueEnd?()
         }
     }
 }
@@ -121,11 +142,5 @@ public class PJShowItem: UIView {
 
 fileprivate extension Selector {
     static let pan = #selector(PJShowItem.panGestrue(panGesture:))
-}
-
-
-extension PJShowItem {
-    static func == (leftItem: PJShowItem, rightItem: PJShowItem) -> Bool {
-        return leftItem.tag == rightItem.tag
-    }
+    static let doubleTap = #selector(PJShowItem.doubleTapGesture(tap:))
 }

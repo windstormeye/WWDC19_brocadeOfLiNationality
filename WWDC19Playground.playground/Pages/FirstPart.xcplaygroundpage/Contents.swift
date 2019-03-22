@@ -22,5 +22,5 @@
 //: - Experiment:
 //: `.guide` means follow tips to finish brocade;
 //: `.create` means you can create yourself brocade.
-start(.guide)
+start(.create)
 

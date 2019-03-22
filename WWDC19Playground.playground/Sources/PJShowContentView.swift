@@ -10,6 +10,7 @@ public class PJShowContentView: UIView {
     
     var winComplate: (() -> Void)?
     var sizeType: PJHomeViewController.SizeType = .rectangle
+    var gameType: PJHomeViewController.GameType = .guide
     var focusItems = [PJShowItem]()
     var copyItems = [PJShowItem]()
     // 注意：这里为三元组
@@ -32,11 +33,13 @@ public class PJShowContentView: UIView {
         return screenWidth / (CGFloat(itemXCount ?? 0) * 2)
     }
     
+    
     public override var frame: CGRect {
         didSet { initView() }
     }
     
     private var lineImageView: UIImageView?
+    private var currentHelpItem: UIView?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -60,6 +63,8 @@ public class PJShowContentView: UIView {
         addSubview(imgView)
         UIGraphicsBeginImageContext(imgView.frame.size) // 位图上下文绘制区域
         imgView.image?.draw(in: imgView.bounds)
+        imgView.isHidden = true
+        imgView.alpha = 0
         lineImageView = imgView
         
         let context:CGContext = UIGraphicsGetCurrentContext()!
@@ -72,6 +77,11 @@ public class PJShowContentView: UIView {
         context.strokePath()
         
         imgView.image = UIGraphicsGetImageFromCurrentImageContext()
+        
+        UIView.animate(withDuration: 2) {
+            self.lineImageView?.isHidden = false
+            self.lineImageView?.alpha = 1
+        }
     }
     
     private func didSetTempItem() {
@@ -81,10 +91,11 @@ public class PJShowContentView: UIView {
     
     private func createCopyItem(_ focusItem: PJShowItem) {
         // 刚开始先顶出去
-        let copyItem = PJShowItem(frame: CGRect(x: -1000, y: -1000,
+        let copyItem = PJShowItem(frame: CGRect(x: 0, y: 0,
                                                 width: focusItem.width / 3 * 2,
                                                 height: focusItem.height / 3 * 2),
                                   isCopy: true)
+        copyItem.center = focusItem.center
         copyItem.tag = focusItem.tag
         copyItem.backgroundColor = focusItem.backgroundColor
         copyItem.isUserInteractionEnabled = false
@@ -98,10 +109,32 @@ public class PJShowContentView: UIView {
             
             copyItem.center = CGPoint(x: copyX, y: newCenter.y)
         }
+        focusItem.tapGestrueEnd = {
+            print(focusItem.transform)
+            
+            if [1.0, -1.0].contains(focusItem.transform.a) {
+                copyItem.transform = CGAffineTransform(a: focusItem.transform.a,
+                                                       b: -focusItem.transform.b,
+                                                       c: -focusItem.transform.c,
+                                                       d: focusItem.transform.d,
+                                                       tx: focusItem.transform.tx,
+                                                       ty: focusItem.transform.ty)
+            } else {
+                copyItem.transform = CGAffineTransform(a: -focusItem.transform.a,
+                                                       b: -focusItem.transform.b,
+                                                       c: -focusItem.transform.c,
+                                                       d: focusItem.transform.d,
+                                                       tx: focusItem.transform.tx,
+                                                       ty: focusItem.transform.ty)
+            }
+        }
+        
         copyItems.append(copyItem)
         
         focusItem.panGestureEnd = {
-            self.fitNearbyLocation(focusItem)
+            if self.gameType == .guide {
+                self.fitNearbyLocation(focusItem)
+            }
         }
     }
     
@@ -152,7 +185,7 @@ public class PJShowContentView: UIView {
                 if !copyItem.isMove { copyItem.isMove = true }
                 if !focuseItem.isMove {
                     focuseItem.isMove = true
-                    //                    focuseItem.isUserInteractionEnabled = false
+                    focuseItem.isUserInteractionEnabled = false
                 }
             }
             print("you win!!!")
