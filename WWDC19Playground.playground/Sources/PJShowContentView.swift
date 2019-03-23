@@ -114,8 +114,6 @@ public class PJShowContentView: UIView {
         }
         
         focusItem.tapGestrueEnd = {
-            print(focusItem.transform)
-            
             if [1.0, -1.0].contains(focusItem.transform.a) {
                 copyItem.transform = CGAffineTransform(a: focusItem.transform.a,
                                                        b: -focusItem.transform.b,
@@ -207,11 +205,11 @@ public class PJShowContentView: UIView {
                     focuseItem.isUserInteractionEnabled = false
                 }
             }
-            print("you win!!!")
+//            print("you win!!!")
             winComplate?()
             self.lineImageView?.alpha = 0
         } else {
-            print("come on!!!")
+//            print("come on!!!")
         }
     }
     

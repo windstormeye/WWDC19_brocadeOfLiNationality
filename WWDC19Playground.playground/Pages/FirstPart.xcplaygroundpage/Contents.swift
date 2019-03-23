@@ -6,11 +6,13 @@
 
 /*:
  - Important: How to play?
- 1. In the screen bottom, you can see some components with specific logo, try to long pressing it then following your finger out of bottom, move it!
+ 1. In the screen bottom, you can see some components with specific logo, try to **long pressing it** then following your finger out of bottom, move it!
  
  2. Free your finger, the component will droping on the screen.
  
- 3. Move it to the right position as much as possible. You can follow the tips to finish it.
+ 3. If you want delete it, long pressing it again.
+ 
+ 4. Move it to the right position as much as possible. You can follow the component badge number to finish it.
  */
 
 /*:
@@ -19,7 +21,8 @@
  */
 
 //: - Important: Call `start` function and input `.guide` paramter to start a new game.
-//: - Experiment:
-//: `.guide` means follow tips to finish brocade;
-//: `.create` means you can create yourself brocade.
 start(.guide)
+
+/*:
+ [Let's get the second part!](@next)
+ */

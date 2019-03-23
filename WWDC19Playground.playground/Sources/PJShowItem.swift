@@ -37,7 +37,16 @@ public class PJShowItem: UIView {
     
     var isBottomItem = false
     var isHelpItem = false
-    var gameType: PJHomeViewController.GameType = .guide
+    var gameType: PJHomeViewController.GameType = .guide {
+        didSet {
+            if gameType == .create {
+                let doubleTapGesture = UITapGestureRecognizer(target: self,
+                                                              action: .doubleTap)
+                doubleTapGesture.numberOfTapsRequired = 2
+                addGestureRecognizer(doubleTapGesture)
+            }
+        }
+    }
     private var isCopy: Bool = false
     private var previousRotation: CGFloat = 0
     
@@ -59,11 +68,6 @@ public class PJShowItem: UIView {
         let panGesture = UIPanGestureRecognizer(target: self,
                                                 action: .pan)
         addGestureRecognizer(panGesture)
-        
-        let doubleTapGesture = UITapGestureRecognizer(target: self,
-                                                      action: .doubleTap)
-        doubleTapGesture.numberOfTapsRequired = 2
-        addGestureRecognizer(doubleTapGesture)
         
         let longPressGesture = UILongPressGestureRecognizer(target: self,
                                                             action: .longPress)
